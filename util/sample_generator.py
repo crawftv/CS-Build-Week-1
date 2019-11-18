@@ -17,22 +17,25 @@ class Room:
         self.w_to = None
         self.x = x
         self.y = y
+
     def __repr__(self):
         if self.e_to is not None:
             return f"({self.x}, {self.y}) -> ({self.e_to.x}, {self.e_to.y})"
         return f"({self.x}, {self.y})"
+
     def connect_rooms(self, connecting_room, direction):
-        '''
+        """
         Connect two rooms in the given n/s/e/w direction
-        '''
+        """
         reverse_dirs = {"n": "s", "s": "n", "e": "w", "w": "e"}
         reverse_dir = reverse_dirs[direction]
         setattr(self, f"{direction}_to", connecting_room)
         setattr(connecting_room, f"{reverse_dir}_to", self)
+
     def get_room_in_direction(self, direction):
-        '''
+        """
         Connect two rooms in the given n/s/e/w direction
-        '''
+        """
         return getattr(self, f"{direction}_to")
 
 
@@ -41,26 +44,26 @@ class World:
         self.grid = None
         self.width = 0
         self.height = 0
+
     def generate_rooms(self, size_x, size_y, num_rooms):
-        '''
+        """
         Fill up the grid, bottom to top, in a zig-zag pattern
-        '''
+        """
 
         # Initialize the grid
         self.grid = [None] * size_y
         self.width = size_x
         self.height = size_y
-        for i in range( len(self.grid) ):
+        for i in range(len(self.grid)):
             self.grid[i] = [None] * size_x
 
         # Start from lower-left corner (0,0)
-        x = -1 # (this will become 0 on the first step)
+        x = -1  # (this will become 0 on the first step)
         y = 0
         room_count = 0
 
         # Start generating rooms to the east
         direction = 1  # 1: east, -1: west
-
 
         # While there are rooms to be created...
         previous_room = None
@@ -94,12 +97,10 @@ class World:
             previous_room = room
             room_count += 1
 
-
-
     def print_rooms(self):
-        '''
+        """
         Print the rooms in room_grid in ascii characters.
-        '''
+        """
 
         # Add top border
         str = "# " * ((3 + self.width * 5) // 2) + "\n"
@@ -108,7 +109,7 @@ class World:
         # bottom to top.
         #
         # We reverse it so it draws in the right direction.
-        reverse_grid = list(self.grid) # make a copy of the list
+        reverse_grid = list(self.grid)  # make a copy of the list
         reverse_grid.reverse()
         for row in reverse_grid:
             # PRINT NORTH CONNECTION ROW
