@@ -126,6 +126,8 @@ REST_FRAMEWORK = {
     ),
 }
 
+LOGIN_URL = "/login"
+LOGIN_REDIRECT_URL = ""
 CORS_ORIGIN_ALLOW_ALL = True
 
 # Internationalization
