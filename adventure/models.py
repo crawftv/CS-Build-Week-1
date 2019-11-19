@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 import uuid
+import random
 
 
 class Room(models.Model):
@@ -77,3 +78,19 @@ def create_user_player(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_player(sender, instance, **kwargs):
     instance.player.save()
+
+
+class Item(models.Model):
+    name = models.CharField(max_length=100)
+    level = models.IntegerField()
+
+
+class Monster(models.Model):
+    name = models.CharField(max_length=100)
+    level = models.IntegerField()
+    hp = models.IntegerField()
+    ad = models.IntegerField()
+    inventory = models.ManyToManyField(Item)
+
+    def basic_attack(self, player: Player):
+        player.hp -= self.ad

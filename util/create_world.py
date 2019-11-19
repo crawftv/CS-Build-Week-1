@@ -1,9 +1,10 @@
 from django.contrib.auth.models import User
-from adventure.models import Player, Room
+from adventure.models import Player, Room, Item, Monster
 
 
 Room.objects.all().delete()
-
+Item.objects.all().delete()
+Monster.objects.all().delete()
 r_outside = Room(
     title="Outside Cave Entrance", description="North of you, the cave mount beckons"
 )
@@ -57,3 +58,8 @@ players = Player.objects.all()
 for p in players:
     p.currentRoom = r_outside.id
     p.save()
+
+gold = Item.objects.create(name="gold", level=1)
+
+m_spider = Monster.objects.create(name="Frost Spider", level=1, hp=5, ad=1)
+m_spider.inventory.set([gold])
