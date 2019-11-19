@@ -25,6 +25,7 @@ SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", cast=bool)
+# DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -127,7 +128,7 @@ REST_FRAMEWORK = {
 }
 
 LOGIN_URL = "/login"
-LOGIN_REDIRECT_URL = ""
+# LOGIN_REDIRECT_URL = ""
 CORS_ORIGIN_ALLOW_ALL = True
 
 # Internationalization
