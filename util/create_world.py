@@ -1,5 +1,9 @@
 from django.contrib.auth.models import User
-from adventure.models import Player, Room
+from adventure.models import Player, Room, Item, Monster
+
+Room.objects.all().delete()
+Item.objects.all().delete()
+Monster.objects.all().delete()
 
 # Create World class
 class World:
@@ -7,6 +11,8 @@ class World:
         self.grid = None
         self.width = 0
         self.height = 0
+
+
 
     def generate_rooms(self, size_x, size_y, num_rooms):
         """
@@ -115,8 +121,7 @@ class World:
         # Print string
         print(str)
 
-'''Room.objects.all().delete()
-
+'''
 r_outside = Room(
     title="Outside Cave Entrance", description="North of you, the cave mount beckons"
 )
@@ -170,3 +175,8 @@ players = Player.objects.all()
 for p in players:
     p.currentRoom = r_outside.id
     p.save()
+
+gold = Item.objects.create(name="gold", level=1)
+
+m_spider = Monster.objects.create(name="Frost Spider", level=1, hp=5, ad=1)
+m_spider.inventory.set([gold])
