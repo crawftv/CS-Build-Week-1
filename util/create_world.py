@@ -12,8 +12,6 @@ class World:
         self.width = 0
         self.height = 0
 
-
-
     def generate_rooms(self, size_x, size_y, num_rooms):
         """
         Fill up the grid, bottom to top, in a zig-zag pattern
@@ -52,7 +50,7 @@ class World:
                 direction *= -1
 
             # Create a room in the given direction
-            room = Room(title="A Generic Room", "This is a generic room.",)
+            room = Room(title="A Generic Room", description="This is a generic room.",)
             # Note that in Django, you'll need to save the room after you create it
             room.save()
 
@@ -121,62 +119,17 @@ class World:
         # Print string
         print(str)
 
-'''
-r_outside = Room(
-    title="Outside Cave Entrance", description="North of you, the cave mount beckons"
-)
-
-r_foyer = Room(
-    title="Foyer",
-    description="""Dim light filters in from the south. Dusty
-passages run north and east.""",
-)
-
-r_overlook = Room(
-    title="Grand Overlook",
-    description="""A steep cliff appears before you, falling
-into the darkness. Ahead to the north, a light flickers in
-the distance, but there is no way across the chasm.""",
-)
-
-r_narrow = Room(
-    title="Narrow Passage",
-    description="""The narrow passage bends here from west
-to north. The smell of gold permeates the air.""",
-)
-
-r_treasure = Room(
-    title="Treasure Chamber",
-    description="""You've found the long-lost treasure
-chamber! Sadly, it has already been completely emptied by
-earlier adventurers. The only exit is to the south.""",
-)
-
-r_outside.save()
-r_foyer.save()
-r_overlook.save()
-r_narrow.save()
-r_treasure.save()
-
-# Link rooms together
-r_outside.connectRooms(r_foyer, "n")
-r_foyer.connectRooms(r_outside, "s")
-
-r_foyer.connectRooms(r_overlook, "n")
-r_overlook.connectRooms(r_foyer, "s")
-
-r_foyer.connectRooms(r_narrow, "e")
-r_narrow.connectRooms(r_foyer, "w")
-
-r_narrow.connectRooms(r_treasure, "n")
-r_treasure.connectRooms(r_narrow, "s")'''
 
 players = Player.objects.all()
+world = World()
+world.generate_rooms(10, 10, 100)
+first_room = world.grid[0][0]
+
 for p in players:
-    p.currentRoom = r_outside.id
+    p.currentRoom = first_room.id
     p.save()
 
 gold = Item.objects.create(name="gold", level=1)
 
 m_spider = Monster.objects.create(name="Frost Spider", level=1, hp=5, ad=1)
-m_spider.inventory.set([gold])
+m_spider.inventory.set([gold, gold])
