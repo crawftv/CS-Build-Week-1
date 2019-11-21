@@ -92,20 +92,23 @@ def move(request):
 @api_view(["GET"])
 def rooms(request):
     rooms = Room.objects.all()
-    l = []
+    nodes = []
+    links = []
+
     for i in rooms:
-        l.append(
-            {
-                "id": i.id,
-                "title": i.title,
-                "description": i.description,
-                "n_to": i.n_to,
-                "s_to": i.s_to,
-                "e_to": i.e_to,
-                "w_to": i.w_to,
-            }
+        nodes.append(
+            {"id": i.id, "title": i.title,}
         )
-    return JsonResponse(l, safe=False)
+        for j in ["n_to", "s_to", "e_to", "w_to"]:
+            z = getattr(i, j)
+            if z > 0:
+                links.append({"source": i.id, "target": z})
+
+    data = {
+        "nodes": nodes,
+        "links": links,
+    }
+    return JsonResponse(data, safe=False)
 
 
 @csrf_exempt
