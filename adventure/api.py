@@ -89,7 +89,7 @@ def move(request):
         )
 
 
-@api_view(["POST"])
+@api_view(["GET"])
 def rooms(request):
     rooms = Room.objects.all()
     l = []
