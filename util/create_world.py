@@ -58,8 +58,12 @@ class World:
             self.grid[y][x] = room
 
             # Connect the new room to the previous room
+            opposite_dictionary = {"w": "e", "e": "w", "s": "n", "n": "s"}
             if previous_room is not None:
+                print(room, room_direction)
                 previous_room.connect_rooms(room, room_direction)
+                print(previous_room, opposite_dictionary[room_direction])
+                room.connect_rooms(previous_room, opposite_dictionary[room_direction])
 
             # Update iteration variables
             previous_room = room
@@ -68,20 +72,14 @@ class World:
     def print_rooms(self):
         """
         Print the rooms in room_grid in ascii characters.
-        """
-
-        # Add top border
+        """  # Add top border
         str = "# " * ((3 + self.width * 5) // 2) + "\n"
-
-        # The console prints top to bottom but our array is arranged
-        # bottom to top.
-        #
-        # We reverse it so it draws in the right direction.
-        reverse_grid = list(self.grid)  # make a copy of the list
+        # The console prints top to bottom but our array is arranged # bottom to top.
+        # # We reverse it so it draws in the right direction.  reverse_grid = list(self.grid)
+        # make a copy of the list
         reverse_grid.reverse()
         for row in reverse_grid:
-            # PRINT NORTH CONNECTION ROW
-            str += "#"
+            # PRINT NORTH CONNECTION ROW str += "#"
             for room in row:
                 if room is not None and room.n_to is not None:
                     str += "  |  "
@@ -133,3 +131,17 @@ gold = Item.objects.create(name="gold", level=1)
 
 m_spider = Monster.objects.create(name="Frost Spider", level=1, hp=5, ad=1)
 m_spider.inventory.set([gold, gold])
+print("World Created")
+r = Room.objects.all()
+for i in r[0:20]:
+    print(
+        {
+            "id": i.id,
+            "title": i.title,
+            "description": i.description,
+            "n_to": i.n_to,
+            "s_to": i.s_to,
+            "e_to": i.e_to,
+            "w_to": i.w_to,
+        }
+    )
