@@ -89,6 +89,25 @@ def move(request):
         )
 
 
+@api_view(["GET"])
+def rooms(request):
+    rooms = Room.objects.all()
+    l = []
+    for i in rooms:
+        l.append(
+            {
+                "id": i.id,
+                "title": i.title,
+                "description": i.description,
+                "n_to": i.n_to,
+                "s_to": i.s_to,
+                "e_to": i.e_to,
+                "w_to": i.w_to,
+            }
+        )
+    return JsonResponse(l, safe=False)
+
+
 @csrf_exempt
 @api_view(["POST"])
 def say(request):
