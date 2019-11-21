@@ -33,8 +33,6 @@ def initialize(request):
             "title": room.title,
             "description": room.description,
             "players": players,
-            "room_x": room.x,
-            "room_y": room.y,
             "id": room.id,
             # "inventory": room.inventory,
         },
@@ -90,8 +88,6 @@ def move(request):
                 "name": player.user.username,
                 "title": nextRoom.title,
                 "id": room.id,
-                "room_x": room.x,
-                "room_y": room.y,
                 "description": nextRoom.description,
                 "players": players,
                 "error_msg": "",
@@ -120,9 +116,7 @@ def rooms(request):
     links = []
 
     for i in rooms:
-        nodes.append(
-            {"id": i.id, "title": i.title,}
-        )
+        nodes.append({"id": i.id, "title": i.title, "x": i.x, "y": i.y})
         for j in ["n_to", "s_to", "e_to", "w_to"]:
             z = getattr(i, j)
             if z > 0:
