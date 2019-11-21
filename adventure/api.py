@@ -22,19 +22,21 @@ def initialize(request):
     uuid = player.uuid
     room = player.room()
     players = room.player_names(player_id)
+    p_inventory = [i for i in list(player.inventory.values())]
+    r_inventory = [i for i in list(room.inventory.values())]
     r = {
         "player": {
             "uuid": uuid,
             "id": player_id,
             "current_room": room.id,
-            # "inventory" : player.inventory,
+            "inventory": p_inventory,
         },
         "room": {
             "title": room.title,
             "description": room.description,
             "players": players,
             "id": room.id,
-            # "inventory": room.inventory,
+            "inventory": r_inventory,
         },
     }
 
@@ -63,22 +65,24 @@ def move(request):
     data = json.loads(request.body)
     direction = data["direction"]
     room = player.room()
-    nextRoomID = None
+    next_room_Id = None
     if direction == "n":
-        nextRoomID = room.n_to
+        next_room_Id = room.n_to
     elif direction == "s":
-        nextRoomID = room.s_to
+        next_room_Id = room.s_to
     elif direction == "e":
-        nextRoomID = room.e_to
+        next_room_Id = room.e_to
     elif direction == "w":
-        nextRoomID = room.w_to
-    if nextRoomID is not None and nextRoomID > 0:
-        nextRoom = Room.objects.get(id=nextRoomID)
-        player.current_room = nextRoomID
+        next_room_Id = room.w_to
+    if next_room_Id is not None and next_room_Id > 0:
+        next_room = Room.objects.get(id=next_room_Id)
+        player.current_room = next_room_Id
         player.save()
-        players = nextRoom.player_names(player_id)
+        players = next_room.player_names(player_id)
         currentPlayerUUIDs = room.player_UUIDs(player_id)
-        nextPlayerUUIDs = nextRoom.player_UUIDs(player_id)
+        nextPlayerUUIDs = next_room.player_UUIDs(player_id)
+        p_inventory = [i for i in list(player.inventory.values())]
+        r_inventory = [i for i in list(next_room.inventory.values())]
         # for p_uuid in currentPlayerUUIDs:
         #     pusher.trigger(f'p-channel-{p_uuid}', u'broadcast', {'message':f'{player.user.username} has walked {dirs[direction]}.'})
         # for p_uuid in nextPlayerUUIDs:
@@ -86,11 +90,13 @@ def move(request):
         return JsonResponse(
             {
                 "name": player.user.username,
-                "title": nextRoom.title,
+                "title": next_room.title,
                 "id": room.id,
-                "description": nextRoom.description,
+                "description": next_room.description,
                 "players": players,
                 "error_msg": "",
+                "p_inventory": p_inventory,
+                "r_inventory": r_inventory,
             },
             safe=True,
         )

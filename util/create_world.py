@@ -2,10 +2,32 @@ from django.contrib.auth.models import User
 from adventure.models import Player, Room, Item, Monster
 import random
 
+# Reset World
 Room.objects.all().delete()
 Item.objects.all().delete()
 Monster.objects.all().delete()
+# Create monsters and items
+base_items = ["staff", "dagger", "sword", "axe"]
+l1_adj = ["ancient", "rusty", "broken"]
+l5_adj = ["mighty", "arcane", "dwarven"]
+items = [None] * 80
+for i in range(15):
+    s = f"{random.choice(l1_adj)} {random.choice(base_items)}"
+    item = Item.objects.create(name=s, level=1, description="")
+    item.save()
+    items.append(item)
 
+for i in range(5):
+    s = f"{random.choice(l5_adj)} {random.choice(base_items)}"
+    item = Item.objects.create(name=s, level=1, description="")
+    item.save()
+    items.append(item)
+
+random.shuffle(items)
+
+gold = Item.objects.create(name="gold", level=1)
+m_spider = Monster.objects.create(name="Frost Spider", level=1, hp=5, ad=1)
+m_spider.inventory.set([gold])
 # Create World class
 class World:
     def __init__(self):
@@ -33,6 +55,28 @@ class World:
         # Start generating rooms to the east
         direction = 1  # 1: east, -1: west
 
+        p_adj = ["Frozen", "Frostbit", "Shivering", "Glacial"]
+        h_c_adj = [
+            "Desolate",
+            "Bleak",
+            "Dreary",
+            "Bare",
+            "Deserted",
+            "Forlorn",
+            "Gloomy",
+            "Barren",
+            "Bereft",
+        ]
+        r_adj = ["Warm", "Cozy"]
+        cryptic_adj = ["Cryptic", "Dark", "Dim", "Mysterious"]
+
+        h = [f"{random.choice(h_c_adj+cryptic_adj)} {i}" for i in ["Hallway"] * 40]
+        p = [f"{random.choice(p_adj+cryptic_adj)} {i}" for i in ["Pass"] * 15]
+        c = [f"{random.choice(h_c_adj+cryptic_adj)} {i}" for i in ["Chamber"] * 15]
+        cell = [f"{random.choice(h_c_adj+cryptic_adj)} {i}" for i in ["Cell"] * 15]
+        room = [f"{random.choice(cryptic_adj)} {i}" for i in ["Room"] * 15]
+        names = h + p + c + cell + room
+
         # While there are rooms to be created...
         previous_room = None
         while room_count < num_rooms:
@@ -51,113 +95,15 @@ class World:
                 direction *= -1
 
             # Create a room in the given direction
-            names = (
-                "Welcome",
-                "Amazon",
-                "Google",
-                "Apple",
-                "Microsoft",
-                "Expanse",
-                "Horizon",
-                "Delta",
-                "Galactic",
-                "Darksaber",
-                "Echo Base",
-                "Order 66",
-                "Coruscant",
-                "Dantooine",
-                "Dagobah",
-                "Corriliea",
-                "Alderran",
-                "Hoth",
-                "Crait",
-                "Mos Eisley",
-                "Tantooine",
-                "Mustafar",
-                "Ghost",
-                "Falcon",
-                "Jakku",
-                "Frozen Tundra",
-                "The Capital",
-                "Studio 54",
-                "Dungeon",
-                "The Cave",
-                "The Lair",
-                "The Republic",
-                "Waterfront",
-                "Batuu",
-                "Bespin",
-                "Concord Dawn",
-                "Dathomir",
-                "Endor",
-                "Geonosis",
-                "Kamino",
-                "Kessel",
-                "Kashyyyk",
-                "Mandalore",
-                "Moraband",
-                "Starkiller Base",
-                "Scarif",
-                "Yavin",
-                "Darth",
-                "Maul",
-                "King's Landing",
-                "The Wall",
-                "Casterly Rock",
-                "Dorne",
-                "The North",
-                "Braavos",
-                "Highgarden",
-                "The Vale",
-                "Blackrock",
-                "Blackwater",
-                "Iron Throne",
-                "Kingsroad",
-                "Dragonstone",
-                "Dothraki",
-                "Middle Earth",
-                "Rivendell",
-                "Gondor",
-                "Isengard",
-                "Moria",
-                "Minas Tirith",
-                "Mordor",
-                "Mount Doom",
-                "The Shire",
-                "First Man",
-                "Underworld",
-                "Asgard",
-                "Avengers Tower",
-                "Baxter Building",
-                "Hell's Kitchen",
-                "Oscorp",
-                "Roxxon",
-                "Stark",
-                "Von Doom",
-                "Gotham",
-                "Metropolis",
-                "Star City",
-                "Atlantis",
-                "Kryton",
-                "Phantom Zone",
-                "Zombieland",
-                "Marvel",
-                "Infinite Earth",
-                "Lambda School",
-                "Oath Breaker",
-                "The Claw",
-                "Looney Toons",
-                "iWorld",
-                "Android",
-                "Python",
-                "Earth",
-                "Mars",
-            )
-            room = Room(
-                title=names[room_count], description="This is a generic room.", x=x, y=y
-            )
-            # Note that in Django, you'll need to save the room after you create it
+
+            name = random.choice(names)
+            names.pop(names.index(name))
+            room = Room(title=name, description="This is a generic room.", x=x, y=y)
             room.save()
+            item = items.pop()
+            if item is not None:
+                room.inventory.set([item])
+            # Note that in Django, you'll need to save the room after you create it
 
             # Save the room in the World grid
             self.grid[y][x] = room
@@ -229,18 +175,17 @@ class World:
         print(str)
 
 
-players = Player.objects.all()
 world = World()
 world.generate_rooms(10, 10, 100)
 world.add_random_connections()
 first_room = world.grid[0][0]
-
+world_map = Item.objects.create(
+    name="Map", description="A map of you environment", level=1
+)
+first_room.inventory.set([world_map])
+players = Player.objects.all()
 for p in players:
     p.currentRoom = first_room.id
     p.save()
 
-gold = Item.objects.create(name="gold", level=1)
-
-m_spider = Monster.objects.create(name="Frost Spider", level=1, hp=5, ad=1)
-m_spider.inventory.set([gold, gold])
 print("World Created")
