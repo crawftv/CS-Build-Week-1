@@ -9,7 +9,7 @@ import random
 
 class Item(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(null=True)
     level = models.IntegerField()
 
 
@@ -64,7 +64,8 @@ class Player(models.Model):
     inventory = models.ManyToManyField(Item)
 
     def initialize(self):
-        if self.current_room == 0:
+        first_room = Room.objects.first().id
+        if self.current_room < first_room:
             self.current_room = Room.objects.first().id
             self.save()
 
