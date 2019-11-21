@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from adventure.models import Player, Room, Item, Monster
+import random
 
 Room.objects.all().delete()
 Item.objects.all().delete()
@@ -60,14 +61,19 @@ class World:
             # Connect the new room to the previous room
             opposite_dictionary = {"w": "e", "e": "w", "s": "n", "n": "s"}
             if previous_room is not None:
-                print(room, room_direction)
                 previous_room.connect_rooms(room, room_direction)
-                print(previous_room, opposite_dictionary[room_direction])
                 room.connect_rooms(previous_room, opposite_dictionary[room_direction])
 
             # Update iteration variables
             previous_room = room
             room_count += 1
+
+    def add_random_connections(self):
+        for i in range(0, self.height, 2):
+            for j in range(0, self.width):
+                if random.randint(0, 1) == 1:
+                    world.grid[i][j].connect_rooms(world.grid[i + 1][j], "n")
+                    world.grid[i + 1][j].connect_rooms(world.grid[i][j], "s")
 
     def print_rooms(self):
         """
@@ -75,7 +81,8 @@ class World:
         """  # Add top border
         str = "# " * ((3 + self.width * 5) // 2) + "\n"
         # The console prints top to bottom but our array is arranged # bottom to top.
-        # # We reverse it so it draws in the right direction.  reverse_grid = list(self.grid)
+        # # We reverse it so it draws in the right direction.
+        reverse_grid = list(self.grid)
         # make a copy of the list
         reverse_grid.reverse()
         for row in reverse_grid:
@@ -121,6 +128,7 @@ class World:
 players = Player.objects.all()
 world = World()
 world.generate_rooms(10, 10, 100)
+world.add_random_connections()
 first_room = world.grid[0][0]
 
 for p in players:
@@ -132,16 +140,3 @@ gold = Item.objects.create(name="gold", level=1)
 m_spider = Monster.objects.create(name="Frost Spider", level=1, hp=5, ad=1)
 m_spider.inventory.set([gold, gold])
 print("World Created")
-r = Room.objects.all()
-for i in r[0:20]:
-    print(
-        {
-            "id": i.id,
-            "title": i.title,
-            "description": i.description,
-            "n_to": i.n_to,
-            "s_to": i.s_to,
-            "e_to": i.e_to,
-            "w_to": i.w_to,
-        }
-    )
