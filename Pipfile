@@ -17,6 +17,10 @@ django-rest-api = "*"
 pre-commit = "*"
 black = "*"
 psycopg2 = "*"
+pytest = "*"
+pytest-cov = "*"
+codecov = "*"
+hypothesis = "*"
 
 [dev-packages]
 
