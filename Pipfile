@@ -21,6 +21,7 @@ pytest = "*"
 pytest-cov = "*"
 codecov = "*"
 hypothesis = "*"
+pytest-django = "*"
 
 [dev-packages]
 
